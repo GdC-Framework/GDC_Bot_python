@@ -1,0 +1,8 @@
+!!python/object:utils.config.Data
+messages:
+  - compter les neutrinos
+  - compter les moutons électroniques
+  - croiser les faisceaux
+  - la marelle
+announcement_channel: 123456789012345678
+moderation_channel: 123456789012345678

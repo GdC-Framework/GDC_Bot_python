@@ -1,0 +1,33 @@
+# Bot configuration
+botName: !!str your_bot_name
+token: !!str yourToken
+prefix: !!str '>' # default prefix
+roleAdmin: # list of admin role
+  - !!int 123456789012345678
+  
+GMAIL_USER: account@gmail.com # gmail account, can be removed
+GMAIL_PASSWORD: mygmailpassword # gmail password, can be removed
+idOwner: # list of owner discord id
+  - !!int 123456789012345678
+  - !!int 234567890123456789
+idGuild: !!int 234567890123456789
+
+# Critical (=destructive) features activation: set to false if you work in a pre-production context and that you really want to talk to the production server (which is NOT recommended)
+check_invite_expiration_enable: false
+check_invite_role_enable: false
+
+# Database configuration
+db_user: dbUsername
+db_pass: dbPassword
+db_host: !!str your.url.com # ip or url
+db_port: !!int 3306 # default port
+db_name: dbName # database name
+connect_timeout: 30 # connection timeout (if DB is not joinable after this time, connection will fail)
+
+# url for connection to the website (`connexion` command)
+connection_url: https://my_url.com/login/ 
+
+# Log configuration
+debugLevel: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
+maxBytes: 100000 # max size of log file (in octet)
+backupCount: 5 # number of backup log file

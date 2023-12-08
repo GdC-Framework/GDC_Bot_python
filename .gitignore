@@ -1,0 +1,9 @@
+.vscode
+.venv
+*.old
+*.pyc
+*.log*
+*.pbo
+__pycache__
+config.yml
+data.yml

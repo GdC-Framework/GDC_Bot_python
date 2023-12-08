@@ -1,0 +1,4 @@
+discord.py==2.3.2
+pyyaml==6.0
+requests
+# systemd==0.17.1 # pour linux uniquement

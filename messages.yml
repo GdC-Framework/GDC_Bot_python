@@ -1,0 +1,27 @@
+welcome: |
+  Salut {username}, tu trouveras toutes les informations pour nous rejoindre dans le salon <#890970415407722496>.
+need_admin: |
+  Il faut être Admin pour pouvoir utiliser cette commande.
+
+unreachable_database: |
+  La base de données est indisponible, cette commande n'aboutira pas. Contactez un admin si le problème persiste.
+
+event_reminder_long_delay: |
+  Bonjour {user_name},
+  N'oublie pas que tu es inscrit à l'évènement **{event_name}** le __{event_start_time}__ sur le discord des Scorpions du Désert !
+event_reminder_mid_delay: |
+  Bonjour {user_name},
+  N'oublie pas que tu es inscrit à l'évènement **{event_name}** à __{event_start_time}__ sur le discord des Scorpions du Désert !
+  Il se déroulera dans {event_channel}
+event_reminder_short_delay: |
+  Dernier rappel !
+  Tu es inscrit à l'évènement **{event_name}** qui commence __{event_start_time}__ sur le discord des Scorpions du Désert !
+  Il se déroulera dans {event_channel}
+
+bot_infos: |
+  Je suis un bot développé par et pour la communauté LSD.
+
+  Pour aider au développement du bot ou suggérer une modification, la demande peut être faite dans un canal en pingant au choix <@239334592241205248> ou <@381178649480658948>.
+
+  Les contributeurs connus à ce jour sont : les 2 membres préalablement cités, <@249633959468597248>, <@143367608081711104>
+# ajouter les ID des personnes à la suite : dans l'ordre : katrhyl, yannzerookie, photonpulse, basox70
