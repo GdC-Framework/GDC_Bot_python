@@ -4,8 +4,6 @@ from datetime import datetime
 from time import time
 from asyncio import sleep, TimeoutError
 
-from urllib.request import urlretrieve
-
 import discord
 from discord.ext import commands
 from discord.ext.commands import Context
