@@ -1,20 +1,21 @@
 # Bot configuration
-botName: !!str your_bot_name
+bot_name: !!str your_bot_name
 token: !!str yourToken
 prefix: !!str '>' # default prefix
-roleAdmin: # list of admin role
+role_admin: # list of admin role
   - !!int 123456789012345678
 
 # for not handled errors
-GMAIL_USER: account@gmail.com # gmail account, can be removed
-GMAIL_PASSWORD: mygmailpassword # gmail password, can be removed
+gmail_user: account@gmail.com # gmail account, can be removed
+gmail_password: mygmailpassword # gmail password, can be removed
 
-idOwner: # list of owner discord id
+id_owner: # list of owner discord id
   - !!int 123456789012345678
   - !!int 234567890123456789
-idGuild: !!int 234567890123456789
+id_guild: !!int 234567890123456789
 
 # Log configuration
-debugLevel: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
-maxBytes: 100000 # max size of log file (in octet)
-backupCount: 5 # number of backup log file
+logger:
+  debug_level: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  max_bytes: 100000 # max size of log file (in octet)
+  backup_count: 5 # number of backup log file

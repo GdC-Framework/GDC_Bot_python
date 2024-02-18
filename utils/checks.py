@@ -7,22 +7,23 @@ Version: 4.0.1
 """
 
 import json
+import logging
 
 from discord.ext import commands
-import logging
-from utils import config
-import exceptions
 
-cfg = config.Config()
+import exceptions
+from utils import config
+
+from .config import bot_configuration as cfg
 
 
 
 def is_owner():
-    async def predicate(context: commands.Context) -> bool:        
+    async def predicate(context: commands.Context) -> bool:
         invoked_with = context.__dict__.get("invoked_with", None)
         logging.debug(f'=== is_owner ===invoked_with {invoked_with}')
 
-        if context.author.id not in cfg.idOwner and invoked_with != "help":
+        if context.author.id not in cfg.id_owner and invoked_with != "help":
             raise UserNotOwner
         return True
 

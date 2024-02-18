@@ -11,19 +11,17 @@ try:
 except ImportError:
     JournaldLogHandler = None
 
-from discord.flags import Intents
-import discord
-from discord.ext import commands, tasks
-
-from utils import mail, config, database
-import exceptions
-
+import random
 from datetime import datetime
 from time import time
-import random
 
+import discord
+from discord.ext import commands, tasks
+from discord.flags import Intents
 
-cfg = config.Config()
+from utils import config, database, mail
+from utils.config import bot_configuration as cfg
+
 messages = config.Messages()
 mail = mail.Mail(cfg)
 
@@ -47,7 +45,7 @@ class MyBot(commands.Bot):
                              "SUCCESS": discord.Color.green()}
 
     # region Custom function
-    
+
     async def load_cogs(self):
         for file in os.listdir("./cogs"):
             if file.endswith(".py"):
@@ -58,13 +56,18 @@ class MyBot(commands.Bot):
 
                 except Exception as e:
                     exception = f"{type(e).__name__}: {e}"
-                    self.logger.info(f"Failed to load extension {extension}\n{exception}")
+                    self.logger.info(
+                        f"Failed to load extension {extension}\n{exception}"
+                    )
 
-    async def send_moderation_message(self, concerning="Message", message_type="Error", message="Message"):
-        """custom function to send embed
-        """
+    async def send_moderation_message(
+        self, concerning="Message", message_type="Error", message="Message"
+    ):
+        """custom function to send embed"""
         for guild in self.guilds:
-            channel = discord.utils.get(guild.channels, id=self.bot_data.moderation_channel)
+            channel = discord.utils.get(
+                guild.channels, id=self.bot_data.moderation_channel
+            )
             if channel:
                 break
         if not channel:
@@ -76,16 +79,24 @@ class MyBot(commands.Bot):
         for info in my_bot.db.db_info:
             if info != "connect_timeout" and str(my_bot.db.db_info[info]) in message:
                 changed = True
-                last_char = 4 if str(my_bot.db.db_info[info]).__len__() >= 4 else str(my_bot.db.db_info[info]).__len__()
-                message = message.replace(str(my_bot.db.db_info[info]), str(my_bot.db.db_info[info])[:-last_char]+'\*'*last_char)
+                last_char = (
+                    4
+                    if str(my_bot.db.db_info[info]).__len__() >= 4
+                    else str(my_bot.db.db_info[info]).__len__()
+                )
+                message = message.replace(
+                    str(my_bot.db.db_info[info]),
+                    str(my_bot.db.db_info[info])[:-last_char] + "\*" * last_char,
+                )
 
         message += " (see logs for more details)" if changed else ""
 
         embed = discord.Embed(
             title=f"{concerning} {message_type}",
             description=message,
-            color=self.embed_colors[(message_type.split(" "))[0].upper()] or discord.Color.dark_teal(),
-            timestamp=datetime.now()
+            color=self.embed_colors[(message_type.split(" "))[0].upper()]
+            or discord.Color.dark_teal(),
+            timestamp=datetime.now(),
         )
         await channel.send(embed=embed)
 
@@ -96,17 +107,19 @@ class MyBot(commands.Bot):
         self.logger.debug(self.guilds)
         self.logger.debug([role for role in [guild.roles for guild in self.guilds]])
         await self.load_cogs()
-        self.logger.info('My Ready is Body')
-        self.logger.info(f'{self.user} is connected to the following guild:')
+        self.logger.info("My Ready is Body")
+        self.logger.info(f"{self.user} is connected to the following guild:")
         for guild in self.guilds:
-            self.logger.info(f'\t{guild.name}(id: {guild.id})')
+            self.logger.info(f"\t{guild.name}(id: {guild.id})")
         status_task.start()
 
     # The code in this event is executed every time someone sends a message, with or without the prefix
     async def on_message(self, message: discord.Message):
         pref = cfg.prefix
-        if "<@"+str(self.user.id)+">" in message.content.lower():
-            await message.channel.send(f"On parle de moi ! Pour avoir plus d'informations, tape {pref}help")
+        if "<@" + str(self.user.id) + ">" in message.content.lower():
+            await message.channel.send(
+                f"On parle de moi ! Pour avoir plus d'informations, tape {pref}help"
+            )
         # Ignores if a command is being executed by a bot or by the bot itself
         if message.author == self.user or message.author.bot:
             return
@@ -118,9 +131,14 @@ class MyBot(commands.Bot):
         split = full_command_name.split(" ")
         executed_command = str(split[0])
         kwargs = f" `{ctx.kwargs}`" if ctx.kwargs.__len__() > 0 else ""
-        args = f" `{[str(arg) for arg in ctx.args if ctx.args.index(arg) > 1]}`" if ctx.args.__len__() > 2 else kwargs
+        args = (
+            f" `{[str(arg) for arg in ctx.args if ctx.args.index(arg) > 1]}`"
+            if ctx.args.__len__() > 2
+            else kwargs
+        )
         self.logger.info(
-            f"Executed `{ctx.clean_prefix}{executed_command}`{args} command in {f'{ctx.channel.guild.name} - {ctx.channel.name}' if ctx.channel.guild != None else 'DM' } (ID: {ctx.channel.id}) by {ctx.message.author} (ID: {ctx.message.author.id})")
+            f"Executed `{ctx.clean_prefix}{executed_command}`{args} command in {f'{ctx.channel.guild.name} - {ctx.channel.name}' if ctx.channel.guild != None else 'DM' } (ID: {ctx.channel.id}) by {ctx.message.author} (ID: {ctx.message.author.id})"
+        )
 
     # The code in this event is executed every time a normal valid command catches an error
     async def on_command_error(self, context, error):
@@ -133,46 +151,45 @@ class MyBot(commands.Bot):
             embed = discord.Embed(
                 title="Hey, please slow down!",
                 description=f"You can use this command again in {f'{round(hours)} hours' if round(hours) > 0 else ''} {f'{round(minutes)} minutes' if round(minutes) > 0 else ''} {f'{round(seconds)} seconds' if round(seconds) > 0 else ''}.",
-                color=0xE02B2B
+                color=0xE02B2B,
             )
             await context.send(embed=embed)
         elif isinstance(error, commands.MissingPermissions):
             send_mail = False
             embed = discord.Embed(
                 title="Error!",
-                description="You are missing the permission(s) `" + ", ".join(
-                    error.missing_permissions) + "` to execute this command!",
-                color=0xE02B2B
+                description="You are missing the permission(s) `"
+                + ", ".join(error.missing_permissions)
+                + "` to execute this command!",
+                color=0xE02B2B,
             )
             await context.send(embed=embed)
-        elif isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.MissingAnyRole):
+        elif isinstance(error, commands.MissingRequiredArgument) or isinstance(
+            error, commands.MissingAnyRole
+        ):
             send_mail = False
             embed = discord.Embed(
-                title="Error!",
-                description=str(error),
-                color=0xE02B2B
+                title="Error!", description=str(error), color=0xE02B2B
             )
             await context.reply(embed=embed)
         elif isinstance(error, commands.CommandInvokeError):
             send_mail = False
             if "Cannot send messages to this user" in str(error):
-                description=f"I can't send you any private messages :confused: \n{str(error)}"
+                description = (
+                    f"I can't send you any private messages :confused: \n{str(error)}"
+                )
             else:
-                description=f"{str(error)}"
+                description = f"{str(error)}"
             embed = discord.Embed(
-                title="Error!",
-                description=description,
-                color=0xE02B2B
+                title="Error!", description=description, color=0xE02B2B
             )
             await context.reply(embed=embed)
         else:
             embed = discord.Embed(
-                title="Error!",
-                description=str(error),
-                color=0xE02B2B
+                title="Error!", description=str(error), color=0xE02B2B
             )
             await context.reply(embed=embed)
-        
+
         # Disconnect DB in case of any error
         try:
             self.db.disconnect()
@@ -181,13 +198,14 @@ class MyBot(commands.Bot):
 
         if mail.is_init and send_mail:
             # send mail if unhandled error
-            mail.send(cfg.GMAIL_USER,
-                      f"Unhandled error {type(error).__name__}",
-                      error,
-                      context)
+            mail.send(
+                cfg.gmail_user,
+                f"Unhandled error {type(error).__name__}",
+                error,
+                context,
+            )
         self.logger.error(error)
         # raise error
-    
 
 
 # Defining intents
@@ -199,10 +217,12 @@ botIntents.message_content = True
 botIntents.members = True
 
 
-my_bot = MyBot(command_prefix=cfg.prefix,
-               description=cfg.botName,
-               intents=botIntents,
-               owner_id=cfg.idOwner)
+my_bot = MyBot(
+    command_prefix=cfg.prefix,
+    description=cfg.bot_name,
+    intents=botIntents,
+    owner_id=cfg.id_owner,
+)
 my_bot.remove_command("help")
 
 
@@ -255,14 +275,19 @@ logger.addHandler(rotating_file_handler)
 # systemd handler
 if JournaldLogHandler:
     journal_handler = JournaldLogHandler()
-    syslog_formatter = logging.Formatter("%(asctime)s - %(process)d - [%(levelname)s] - %(message)s", datefmt='%y%m%d_%H%M%S')
+    syslog_formatter = logging.Formatter(
+        "%(asctime)s - %(process)d - [%(levelname)s] - %(message)s",
+        datefmt="%y%m%d_%H%M%S",
+    )
     journal_handler.setFormatter(syslog_formatter)
     logger.addHandler(journal_handler)
 
 # Add the handlers
 my_bot.logger = logger
 my_bot.logger.info("--------------------------------------------------")
-my_bot.logger.debug(f"Loggers : {[type(handler) for handler in my_bot.logger.handlers]}")
+my_bot.logger.debug(
+    f"Loggers : {[type(handler) for handler in my_bot.logger.handlers]}"
+)
 
 # endregion
 
@@ -281,7 +306,10 @@ async def disconnect(ctx):
 # Setup the game status task of the my_bot
 @tasks.loop(seconds=30)
 async def status_task():
-    await my_bot.change_presence(activity=discord.CustomActivity(random.choice(my_bot.statuses)))
+    await my_bot.change_presence(
+        activity=discord.CustomActivity(random.choice(my_bot.statuses))
+    )
+
 
 @my_bot.listen()
 async def on_reaction_add(reaction, user):
@@ -291,9 +319,11 @@ async def on_reaction_add(reaction, user):
 
 @my_bot.event
 async def on_guild_join(guild):
-    """ Executed when bot join a new guild """
+    """Executed when bot join a new guild"""
     my_bot.logger.info(f"Bot joined guild {guild.name}")
-    await guild.system_channel.send("Bonjour, c'est le bot LSD python! Je suis là pour vous aider à gérer votre serveur discord. ")
+    await guild.system_channel.send(
+        "Bonjour, c'est le bot LSD python! Je suis là pour vous aider à gérer votre serveur discord. "
+    )
 
 
 @my_bot.event
@@ -304,6 +334,7 @@ async def on_member_join(member):
 @my_bot.event
 async def on_raw_member_remove(payload):
     my_bot.logger.info(f"{payload.user.display_name} left {payload.user.guild.name}")
+
 
 @my_bot.event
 async def on_scheduled_event_update(before, after):

@@ -8,7 +8,7 @@ class Mail(object):
         super(Mail, self).__init__()
         self.cfg = cfg
         self.server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        self.is_init = ( hasattr(self.cfg, "GMAIL_USER") and hasattr(self.cfg, "GMAIL_PASSWORD") ) and True or False
+        self.is_init = ( hasattr(self.cfg, "gmail_user") and hasattr(self.cfg, "gmail_password") ) and True or False
 
     """
     Send mail to <to> with <subject> and <body>
@@ -26,9 +26,9 @@ class Mail(object):
             commande_details = f"Commande : `{ctx.clean_prefix}{executed_command}`{args} command in {f'{ctx.channel.guild.name} - {ctx.channel.name}' if ctx.channel.guild != None else 'DM' } (ID: {ctx.channel.id}) by {ctx.message.author} (ID: {ctx.message.author.id})\n"
         to = to if type(to) == str else ", ".join(to)
         email_text = f"""\
-From: {self.cfg.botName} {self.cfg.GMAIL_USER}
+From: {self.cfg.bot_name} {self.cfg.gmail_user}
 To: {to}
-Subject: [{self.cfg.botName}] {subject}
+Subject: [{self.cfg.bot_name}] {subject}
 
 {commande_details}
 {body}
@@ -36,8 +36,8 @@ Subject: [{self.cfg.botName}] {subject}
         try:
             self.server.connect('smtp.gmail.com', 465)
             self.server.ehlo()
-            self.server.login(self.cfg.GMAIL_USER, self.cfg.GMAIL_PASSWORD)
-            self.server.sendmail(self.cfg.GMAIL_USER, to, email_text)
+            self.server.login(self.cfg.gmail_user, self.cfg.gmail_password)
+            self.server.sendmail(self.cfg.gmail_user, to, email_text)
             self.server.close()
         except Exception as e:
             return False, e

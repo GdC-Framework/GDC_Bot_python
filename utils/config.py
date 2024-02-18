@@ -1,35 +1,65 @@
-import os, sys, yaml
+""" Read configuration file
+"""
+import sys
+from pathlib import Path
+from typing import TypedDict
 
+import yaml
+
+# pylint: disable=W0621
 # Contain all Class to load config, data and messages
 
-config_file = "config.yml"
-data_file = "data.yml"
-messages_file = "messages.yml"
+config_file = Path("config.yml")
+data_file = Path("data.yml")
+messages_file = Path("messages.yml")
+
 
 class Config(object):
-    def __init__(self):
-        if not os.path.isfile(config_file):
-            sys.exit(f"{config_file} not found! Please add it and try again.")
-        else:
-            with open(config_file) as file:
-                config = yaml.safe_load(file)
-                for k in config:
-                    setattr(self, k, config[k])
+    """Bot config object
+    """
+    def __init__(self, file_path: str | Path) -> None:
 
-    def build_login_url(self, key):
-        return self.connection_url + '/' + key
+        # Just some linter definitions, does nothing
+        self.connection_url: Path
+        self.bot_name: str
+        self.token: str
+        self.prefix: str
+        self.role_admin: list
+        self.gmail_user: str
+        self.gmail_password: str
+        self.id_owner: list[int]
+        self.id_guild: int
+        self.logger: LoggerConfig
 
+
+
+
+
+        with open(file_path, encoding="utf-8") as file:
+            config = yaml.safe_load(file)
+            for k in config:
+                self.__setattr__(k, config[k])
+
+    def build_login_url(self, key: str | Path) -> Path:
+        return self.connection_url / key
+
+class LoggerConfig(TypedDict):
+    """Some linter definitions again, just a classic dict with known keys
+    """
+    debug_level: str
+    max_bytes: int
+    backup_count: int
 
 class Data(object):
     def __init__(self):
 
-        if not os.path.isfile(data_file):
-            return
-        else:
+        try:
             with open(data_file) as file:
                 data = yaml.load(file, yaml.Loader)
                 for k in data.__dict__:
-                    setattr(self, k, getattr(data,k))
+                    setattr(self, k, getattr(data, k))
+        except FileNotFoundError as error:
+            logger.error()
 
     def save(self, data):
         with open(data_file, "w") as f:
@@ -43,7 +73,10 @@ class Messages(object):
         if not os.path.isfile(messages_file):
             sys.exit(f"{messages_file} not found! Please add it and try again.")
         else:
-            with open(messages_file, encoding='utf-8') as file:
+            with open(messages_file, encoding="utf-8") as file:
                 messages = yaml.safe_load(file)
                 for k in messages:
                     setattr(self, k, messages[k])
+
+
+bot_configuration = Config(Path("config.yml"))
