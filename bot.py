@@ -259,7 +259,7 @@ class LoggingFormatter(logging.Formatter):
 
 
 logger = logging.getLogger("discord_bot")
-logger.setLevel(cfg.debugLevel)
+logger.setLevel(cfg.logger["debugLevel"])
 
 # Console handler
 console_handler = logging.StreamHandler()
@@ -267,7 +267,7 @@ console_handler.setFormatter(LoggingFormatter())
 logger.addHandler(console_handler)
 
 # Rotating file handler
-rotating_file_handler = RotatingFileHandler(filename=f'logs/{cfg.botName}.log', mode="w", maxBytes=cfg.maxBytes, backupCount=cfg.backupCount, encoding="utf-8")
+rotating_file_handler = RotatingFileHandler(filename=f'logs/{cfg.bot_name}.log', mode="w", maxBytes=cfg.logger["max_bytes"], backupCount=cfg.logger["backup_count"], encoding="utf-8")
 rotating_file_formatter = logging.Formatter("%(asctime)s - %(process)d - [%(levelname)s] - %(message)s", datefmt='%y%m%d_%H%M%S')
 rotating_file_handler.setFormatter(rotating_file_formatter)
 logger.addHandler(rotating_file_handler)

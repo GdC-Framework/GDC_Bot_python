@@ -17,7 +17,7 @@ messages_file = Path("messages.yml")
 class Config(object):
     """Bot config object
     """
-    def __init__(self, file_path: str | Path) -> None:
+    def __init__(self) -> None:
 
         # Just some linter definitions, does nothing
         self.connection_url: Path
@@ -32,16 +32,11 @@ class Config(object):
         self.logger: LoggerConfig
 
 
-
-
-
-        with open(file_path, encoding="utf-8") as file:
+        with open(config_file, encoding="utf-8") as file:
             config = yaml.safe_load(file)
             for k in config:
                 self.__setattr__(k, config[k])
 
-    def build_login_url(self, key: str | Path) -> Path:
-        return self.connection_url / key
 
 class LoggerConfig(TypedDict):
     """Some linter definitions again, just a classic dict with known keys
@@ -61,7 +56,6 @@ class Data(object):
         with open(data_file, "w") as f:
             yaml.dump(data, f, indent=2)
             return True
-        return False
 
 
 class Messages(object):
@@ -73,4 +67,4 @@ class Messages(object):
 
 
 
-bot_configuration = Config(Path("config.yml"))
+bot_configuration = Config()
