@@ -52,14 +52,10 @@ class LoggerConfig(TypedDict):
 
 class Data(object):
     def __init__(self):
-
-        try:
-            with open(data_file) as file:
-                data = yaml.load(file, yaml.Loader)
-                for k in data.__dict__:
-                    setattr(self, k, getattr(data, k))
-        except FileNotFoundError as error:
-            logger.error()
+        with open(data_file) as file:
+            data = yaml.load(file, yaml.Loader)
+            for k in data.__dict__:
+                setattr(self, k, getattr(data, k))
 
     def save(self, data):
         with open(data_file, "w") as f:
@@ -70,13 +66,11 @@ class Data(object):
 
 class Messages(object):
     def __init__(self):
-        if not os.path.isfile(messages_file):
-            sys.exit(f"{messages_file} not found! Please add it and try again.")
-        else:
-            with open(messages_file, encoding="utf-8") as file:
-                messages = yaml.safe_load(file)
-                for k in messages:
-                    setattr(self, k, messages[k])
+        with open(messages_file, encoding="utf-8") as file:
+            messages = yaml.safe_load(file)
+            for k in messages:
+                setattr(self, k, messages[k])
+
 
 
 bot_configuration = Config(Path("config.yml"))
